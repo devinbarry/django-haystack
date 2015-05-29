@@ -1,10 +1,9 @@
 # encoding: utf-8
 from __future__ import absolute_import, division, print_function, unicode_literals
-
+from importlib import import_module
 from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.importlib import import_module
 
 __all__ = ['haystack_get_models', 'haystack_load_apps']
 
