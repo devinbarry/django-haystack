@@ -5,10 +5,10 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 import copy
 import inspect
 import warnings
+import importlib
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils import importlib
 from django.utils.datastructures import SortedDict
 from django.utils.module_loading import module_has_submodule
 
