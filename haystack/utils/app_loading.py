@@ -4,7 +4,6 @@ from __future__ import absolute_import, division, print_function, unicode_litera
 from django import VERSION as DJANGO_VERSION
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models.loading import get_app, get_model, get_models
 from django.utils.importlib import import_module
 
 __all__ = ['haystack_get_models', 'haystack_load_apps']
@@ -27,9 +26,9 @@ if DJANGO_VERSION >= (1, 7):
 
     def haystack_get_models(label):
         try:
-            app_mod = get_app(label)
+            app_mod = apps.get_app(label)
             if app_mod is not None:
-                return get_models(app_mod=app_mod)
+                return apps.get_models(app_mod=app_mod)
         except ImproperlyConfigured:
             pass
 
@@ -37,7 +36,7 @@ if DJANGO_VERSION >= (1, 7):
             raise ImproperlyConfigured("No installed application has the label %s" % label)
 
         app_label, model_name = label.rsplit('.', 1)
-        return [get_model(app_label, model_name)]
+        return [apps.get_model(app_label, model_name)]
 
 else:
     def is_app_or_model(label):
@@ -47,12 +46,13 @@ else:
             return APP
         elif len(label_bits) == 2:
             try:
-                get_model(*label_bits)
+                apps.get_model(*label_bits)
             except LookupError:
                 return APP
             return MODEL
         else:
-            raise ImproperlyConfigured("'%s' isn't recognized as an app (<app_label>) or model (<app_label>.<model_name>)." % label)
+            raise ImproperlyConfigured("'%s' isn't recognized as an app (<app_label>) or model "
+                                       "(<app_label>.<model_name>)." % label)
 
     def haystack_get_app_modules():
         """Return the Python module for each installed app"""
@@ -66,7 +66,7 @@ else:
             app_label = app.split('.')[-1]
 
             try:
-                get_app(app_label)
+                apps.get_app(app_label)
             except ImproperlyConfigured:
                 continue  # Intentionally allow e.g. apps without models.py
 
@@ -78,8 +78,8 @@ else:
         app_or_model = is_app_or_model(label)
 
         if app_or_model == APP:
-            app_mod = get_app(label)
-            return get_models(app_mod)
+            app_mod = apps.get_app(label)
+            return apps.get_models(app_mod)
         else:
             app_label, model_name = label.rsplit('.', 1)
-            return [get_model(app_label, model_name)]
+            return [apps.get_model(app_label, model_name)]
